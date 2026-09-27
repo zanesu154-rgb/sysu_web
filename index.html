@@ -145,7 +145,7 @@
 
   <script>
     const sites = [
-      { name: "中大统一门户", url: "https://mportal.sysu.edu.cn/mobilePortal/#/login", icon: "🏛️", desc: "统一身份认证 / 综合入口" },
+      { name: "中大统一门户", url: "https://portal.sysu.edu.cn/newClient/#/login", icon: "🏛️", desc: "统一身份认证 / 综合入口" },
       { name: "中大教务系统", url: "https://jwxt.sysu.edu.cn/jwxt/#/login", icon: "📚", desc: "选课 / 成绩 / 学籍" },
       { name: "中大图书馆", url: "https://library.sysu.edu.cn", icon: "📖", desc: "馆藏查询 / 借阅 / 数据库" },
       { name: "学生邮箱", url: "https://mail.stu.sysu.edu.cn/", icon: "✉️", desc: "中大邮箱 / 校园通知" },
@@ -155,12 +155,13 @@
       { name: "雨课堂", url: "https://www.yuketang.cn/", icon: "📝", desc: "雨课堂，各类作业提交处" },
       { name: "头歌平台", url: "http://172.25.70.126/", icon: "💻", desc: "校内编程平台（需校园网）" },
       { name: "Microsoft工具下载", url: "https://ms.sysu.edu.cn/", icon: "🔧", desc: "Office / 正版软件（需校园网）" },
+      { name: "VPN隧道", url: "https://inc.sysu.edu.cn/service/vpn", icon: "🔐", desc: "校外访问校内资源" },
+      { name: "「电通最帅の男人」", url: "https://i.ibb.co/fV0N85wf/8f1bd4d2e501d6e970c0e63e6df2ba2f.jpg", icon: "🖼️", desc: "点击查看（需密钥）", lock: "dtldnbnbnbb" },
     ];
 
     const grid = document.getElementById('grid');
     const searchInput = document.getElementById('search');
 
-    // 收藏（存在浏览器本地）
     let favs = JSON.parse(localStorage.getItem('sysu_favs') || '[]');
 
     function render(keyword = '') {
@@ -175,7 +176,8 @@
       }
 
       grid.innerHTML = filtered.map(s => `
-    <a class="card" href="${s.url}" target="_blank" rel="noopener">
+    <a class="card" href="${s.lock ? 'javascript:void(0)' : s.url}"
+       ${s.lock ? `data-lock="${s.lock}" data-url="${s.url}"` : 'target="_blank" rel="noopener"'}>
       <span class="fav ${favs.includes(s.name) ? 'active' : ''}" data-name="${s.name}">★</span>
       <div class="icon">${s.icon}</div>
       <div class="name">${s.name}</div>
@@ -183,7 +185,7 @@
     </a>
   `).join('');
 
-      // 收藏点击
+      // 收藏
       grid.querySelectorAll('.fav').forEach(el => {
         el.addEventListener('click', e => {
           e.preventDefault();
@@ -193,6 +195,19 @@
           else favs.push(n);
           localStorage.setItem('sysu_favs', JSON.stringify(favs));
           render(searchInput.value);
+        });
+      });
+
+      // 密码卡片
+      grid.querySelectorAll('.card[data-lock]').forEach(el => {
+        el.addEventListener('click', e => {
+          e.preventDefault();
+          const input = prompt('请输入密钥：');
+          if (input === el.dataset.lock) {
+            window.open(el.dataset.url, '_blank');
+          } else if (input !== null) {
+            alert('密钥错误');
+          }
         });
       });
     }
